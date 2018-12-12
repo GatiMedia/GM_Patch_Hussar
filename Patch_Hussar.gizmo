@@ -1,20 +1,20 @@
 set cut_paste_input [stack 0]
-version 10.5 v7
+version 11.2 v3
 push $cut_paste_input
 Group {
  name Patch_Hussar
  tile_color 0xff5555ff
  selected true
- xpos -40
- ypos -826
+ xpos 218
+ ypos 1037
  addUserKnob {20 main l Main}
  addUserKnob {26 options l "<b><font color=#DF2111>Color</font><b>"}
  addUserKnob {4 type l "Screen Type" t "Pick color based on the background color." M {Blue Green "" "" ""}}
  addUserKnob {41 value l Multiply t "Allows to adjust the color of the edge." T Multiply.value}
  addUserKnob {41 red l Exposure t "Allows to adjust the exposure of the edge." T Exposure1.red}
  addUserKnob {26 edge_matte l "<b><font color=#FFFFFF>Edges</font><b>"}
- addUserKnob {41 chew l "Extend Edge" t "Allows you to increase or decrease the size of the `mask`." T key_chew1.chew}
- addUserKnob {41 soften l "Soften Edge" t "Allows you to soften the edges of `mask`." T key_chew1.soften}
+ addUserKnob {41 chew l "Edge Extend " t "Allows you to increase or decrease the size of the `mask`." T key_chew_patch.chew}
+ addUserKnob {41 soften l "Soften Edge" t "Allows you to soften the edges of `mask`." T key_chew_patch.soften}
  addUserKnob {26 mask l "<b><font color=#298B00>Mask</font><b>"}
  addUserKnob {41 disable_1 l "Mask Ignore" t "Allows you to disable what comes in on the `mask` input. " T ChannelMerge_Mult.disable}
  addUserKnob {7 MIX l Mix t "Allows you to change the value of Mix."}
@@ -89,19 +89,19 @@ Group {
   xpos 104
   ypos 138
  }
-set Ne428220 [stack 0]
+set N7345f500 [stack 0]
  Dot {
   name Dot2
   xpos 544
   ypos 138
  }
-set Ne42cc90 [stack 0]
+set N7345f180 [stack 0]
  Dot {
   name Dot21
   xpos 1754
   ypos 138
  }
-set Ne4317a0 [stack 0]
+set N7345ee00 [stack 0]
  Keyer {
   operation "luminance key"
   range {0 0 0 0.1}
@@ -114,14 +114,14 @@ set Ne4317a0 [stack 0]
   xpos 1830
   ypos 608
  }
- set Ce440310 [stack 0]
+ set C7345e700 [stack 0]
  Blur {
   size 1.5
   name Blur_range_edge
   xpos 1830
   ypos 824
  }
- set Ce44ebb0 [stack 0]
+ set C7345e380 [stack 0]
  Input {
   inputs 0
   name mask
@@ -134,11 +134,113 @@ set Ne4317a0 [stack 0]
   xpos 950
   ypos -40
  }
- key_chew {
-  name key_chew1
+ Group {
+  name key_chew_patch
+  help "======== KeyChew beta ========\n=============================\n\nThis is a port of the KeyChew macro for Shake to Nuke.\n\nThere might be tiny differences on the results given in both apps. Some of them are caused by the internal algorithms of each app, and others by the way I faked the JSplineV\nexpression of Shake in Nuke. If you know a better way to solve this, let\nme know!!\n\n=============================\n             2009 Cuco Bures\n============================="
+  selected true
   xpos 950
   ypos 398
+  addUserKnob {20 Controls}
+  addUserKnob {7 chew t "\t\t" R -200 200}
+  addUserKnob {7 soften R 0 200}
+  addUserKnob {6 matteMult +STARTLINE}
  }
+  Input {
+   inputs 0
+   name Input
+   xpos 0
+  }
+set N7df2d500 [stack 0]
+  Dot {
+   name Dot1
+   xpos 366
+   ypos 5
+  }
+set N7df2d180 [stack 0]
+push $N7df2d180
+  Invert {
+   name Invert1
+   xpos 177
+   ypos 34
+  }
+push $N7df2d180
+  Switch {
+   inputs 2
+   which {{"\[value parent.chew]>=0?0:1"}}
+   name Switch1
+   xpos 177
+   ypos 87
+  }
+  Blur {
+   size {{"(floor(abs(\[value parent.chew]))/4)+(floor(abs(\[value parent.chew]))/8)" i}}
+   name FgEdgeBlur
+   xpos 177
+   ypos 111
+  }
+  Grade {
+   channels alpha
+   multiply {1 1 1 {max(FgEdgeBlur.size*1.5,1) i}}
+   black_clamp false
+   name FgEdgeMult
+   xpos 177
+   ypos 165
+  }
+  Grade {
+   channels alpha
+   gamma {1 1 1 {JSplineVFake(floor(abs(parent.chew))) i}}
+   name FgEdgeGamma1
+   xpos 177
+   ypos 213
+   addUserKnob {20 User}
+   addUserKnob {7 JSplineVFake}
+   JSplineVFake {{curve i l 0.9958 k x5 0.95 0.8 x20 0.5 x40 0.3 x80 0.2 l x200 0.1}}
+  }
+set N7df2c000 [stack 0]
+  Merge2 {
+   inputs 2
+   operation minus
+   name Merge1
+   xpos 332
+   ypos 218
+  }
+push $N7df2c000
+  Switch {
+   inputs 2
+   which {{"\[value parent.chew]>=0?0:1"}}
+   name Switch2
+   xpos 177
+   ypos 284
+  }
+  Clamp {
+   name Clamp2
+   xpos 177
+   ypos 323
+  }
+  Blur {
+   size {{"(floor(abs(\[value parent.soften]))/4)+(floor(abs(\[value parent.soften]))/8)"}}
+   name BlurResult
+   xpos 177
+   ypos 446
+  }
+push $N7df2d500
+  ShuffleCopy {
+   inputs 2
+   name ShuffleCopy1
+   xpos 0
+   ypos 451
+  }
+  Premult {
+   name Premult1
+   xpos 0
+   ypos 486
+   disable {{"1-\[value parent.matteMult]" i}}
+  }
+  Output {
+   name Output1
+   xpos 0
+   ypos 556
+  }
+ end_group
  Constant {
   inputs 0
   channels alpha
@@ -155,19 +257,19 @@ set Ne4317a0 [stack 0]
   xpos 950
   ypos 548
  }
-set Ne51dbb0 [stack 0]
+set N73483500 [stack 0]
  Dot {
   name Dot18
   xpos 984
   ypos 618
  }
-set Ne52a010 [stack 0]
+set N73483180 [stack 0]
  Dot {
   name Dot19
   xpos 1094
   ypos 618
  }
-set Ne52eaa0 [stack 0]
+set N73482e00 [stack 0]
  Dot {
   name Dot20
   xpos 1204
@@ -181,13 +283,13 @@ set Ne52eaa0 [stack 0]
   xpos 1170
   ypos 806
  }
-set Ne538080 [stack 0]
+set N73482700 [stack 0]
  Dot {
   name Dot11
   xpos 1204
   ypos 1818
  }
-push $Ne4317a0
+push $N7345ee00
  Keyer {
   operation "luminance key"
   range {0 0.1 0.5 1}
@@ -195,17 +297,17 @@ push $Ne4317a0
   xpos 1720
   ypos 344
  }
-clone $Ce440310 {
+clone $C7345e700 {
   xpos 1720
   ypos 536
   selected false
  }
-clone $Ce44ebb0 {
+clone $C7345e380 {
   xpos 1720
   ypos 752
   selected false
  }
-push $Ne52eaa0
+push $N73482e00
  ChannelMerge {
   inputs 2
   operation multiply
@@ -214,13 +316,13 @@ push $Ne52eaa0
   xpos 1060
   ypos 734
  }
-set Ne56f300 [stack 0]
+set N734b3500 [stack 0]
  Dot {
   name Dot13
   xpos 1094
   ypos 1770
  }
-push $Ne4317a0
+push $N7345ee00
  Keyer {
   operation "luminance key"
   range {0.5 1 50 50}
@@ -228,17 +330,17 @@ push $Ne4317a0
   xpos 1610
   ypos 272
  }
-clone $Ce440310 {
+clone $C7345e700 {
   xpos 1610
   ypos 464
   selected false
  }
-clone $Ce44ebb0 {
+clone $C7345e380 {
   xpos 1610
   ypos 680
-  selected true
+  selected false
  }
-push $Ne52a010
+push $N73483180
  ChannelMerge {
   inputs 2
   operation multiply
@@ -247,43 +349,43 @@ push $Ne52a010
   xpos 950
   ypos 662
  }
-set Ne5a65b0 [stack 0]
+set N734b2380 [stack 0]
  Dot {
   name Dot12
   xpos 984
   ypos 1722
  }
-push $Ne51dbb0
+push $N73483500
  Dot {
   name Dot5
   xpos 874
   ypos 570
  }
-set Ne5b7140 [stack 0]
+set N734e7c00 [stack 0]
  Dot {
   name Dot17
   xpos 874
   ypos 1146
  }
-set Ne5bba10 [stack 0]
+set N734e7880 [stack 0]
  Dot {
   name Dot9
   xpos 874
   ypos 1362
  }
-set Ne5c0830 [stack 0]
+set N734e7500 [stack 0]
  Dot {
   name Dot7
   xpos 874
   ypos 1482
  }
-set Ne5c53c0 [stack 0]
+set N734e7180 [stack 0]
  Dot {
   name Dot8
   xpos 874
   ypos 1626
  }
-push $Ne428220
+push $N7345f500
  Dot {
   name Dot3
   xpos -116
@@ -294,21 +396,21 @@ push $Ne428220
   xpos -116
   ypos 1482
  }
-set Ne5d3310 [stack 0]
-push $Ne5b7140
+set N734e6700 [stack 0]
+push $N734e7c00
  Dot {
   name Dot14
   xpos 874
   ypos 498
  }
-set Ne5d7bc0 [stack 0]
+set N734e6380 [stack 0]
  Dot {
   name Dot6
   xpos 874
   ypos 450
  }
-push $Ne428220
-push $Ne42cc90
+push $N7345f500
+push $N7345f180
  Blur {
   channels {{{parent.channels}}}
   size 40
@@ -316,7 +418,7 @@ push $Ne42cc90
   xpos 510
   ypos 248
  }
-set Ne5e1470 [stack 0]
+set N734ffc00 [stack 0]
  Merge2 {
   inputs 2
   operation divide
@@ -324,7 +426,7 @@ set Ne5e1470 [stack 0]
   xpos 70
   ypos 254
  }
-set Ne5ee870 [stack 0]
+set N734ff880 [stack 0]
  Expression {
   inputs 1+1
   expr2 "g>max(r,b) ? max (r,b):g"
@@ -333,8 +435,8 @@ set Ne5ee870 [stack 0]
   xpos -40
   ypos 446
  }
-push $Ne5d7bc0
-push $Ne5ee870
+push $N734e6380
+push $N734ff880
  Expression {
   inputs 1+1
   expr2 "b>max(r,g) ? max (r,g):b"
@@ -350,12 +452,12 @@ push $Ne5ee870
   xpos 70
   ypos 1142
  }
- set Ce619d60 [stack 0]
-push $Ne5c0830
-push $Ne538080
-push $Ne56f300
-push $Ne5a65b0
-push $Ne5e1470
+ set C734fe700 [stack 0]
+push $N734e7500
+push $N73482700
+push $N734b3500
+push $N734b2380
+push $N734ffc00
  Dot {
   name Dot364
   xpos 654
@@ -389,8 +491,8 @@ push $Ne5e1470
   xpos 654
   ypos 1098
  }
-set Ne6557d0 [stack 0]
-push $Ne5e1470
+set N73535180 [stack 0]
+push $N734ffc00
  Copy {
   inputs 2+1
   from0 rgba.red
@@ -401,9 +503,9 @@ push $Ne5e1470
   xpos 510
   ypos 1352
  }
-push $Ne5bba10
-push $Ne6557d0
-push $Ne5e1470
+push $N734e7880
+push $N73535180
+push $N734ffc00
  Copy {
   inputs 2+1
   from0 rgba.green
@@ -414,7 +516,7 @@ push $Ne5e1470
   xpos 510
   ypos 1136
  }
-clone $Ce619d60 {
+clone $C734fe700 {
   inputs 2
   xpos 180
   ypos 1142
@@ -427,7 +529,7 @@ clone $Ce619d60 {
   xpos 70
   ypos 1358
  }
-set Ne67e170 [stack 0]
+set N73534380 [stack 0]
  Copy {
   inputs 2
   from1 rgba.red
@@ -439,9 +541,9 @@ set Ne67e170 [stack 0]
   xpos 180
   ypos 1460
  }
-push $Ne5c53c0
-push $Ne5d3310
-push $Ne67e170
+push $N734e7180
+push $N734e6700
+push $N73534380
  Copy {
   inputs 2+1
   from1 rgba.red
@@ -453,7 +555,7 @@ push $Ne67e170
   xpos 70
   ypos 1460
  }
-clone $Ce619d60 {
+clone $C734fe700 {
   inputs 2
   xpos 70
   ypos 1574
