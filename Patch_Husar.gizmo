@@ -1,0 +1,503 @@
+set cut_paste_input [stack 0]
+version 10.5 v7
+push $cut_paste_input
+Group {
+ name Patch_Hussar
+ tile_color 0xff5555ff
+ selected true
+ xpos -40
+ ypos -826
+ addUserKnob {20 main l Main}
+ addUserKnob {26 options l "<b><font color=#DF2111>Color</font><b>"}
+ addUserKnob {4 type l "Screen Type" t "Pick color based on the background color." M {Blue Green "" "" ""}}
+ addUserKnob {41 value l Multiply t "Allows to adjust the color of the edge." T Multiply.value}
+ addUserKnob {41 red l Exposure t "Allows to adjust the exposure of the edge." T Exposure1.red}
+ addUserKnob {26 edge_matte l "<b><font color=#FFFFFF>Edges</font><b>"}
+ addUserKnob {41 chew l "Extend Edge" t "Allows you to increase or decrease the size of the `mask`." T key_chew1.chew}
+ addUserKnob {41 soften l "Soften Edge" t "Allows you to soften the edges of `mask`." T key_chew1.soften}
+ addUserKnob {26 mask l "<b><font color=#298B00>Mask</font><b>"}
+ addUserKnob {41 disable_1 l "Mask Ignore" t "Allows you to disable what comes in on the `mask` input. " T ChannelMerge_Mult.disable}
+ addUserKnob {7 MIX l Mix t "Allows you to change the value of Mix."}
+ MIX 1
+ addUserKnob {26 line l <b></font><b>}
+ addUserKnob {26 TEXT l "" +STARTLINE T "<font color=#808080 size=\"5\" >1.01 version</font>"}
+ addUserKnob {26 HeadlineB l "" +STARTLINE T "<font color=#808080 size=\"2\">Edge Hussar© by Attila Gasparetz</font>"}
+ addUserKnob {20 info n 1}
+ info 0
+ addUserKnob {26 jm l "" +STARTLINE T "Use Patch Hussar to fix damaged channel areas."}
+ addUserKnob {20 endGroup_1 l endGroup n -1}
+ addUserKnob {20 ranges l Ranges}
+ addUserKnob {26 color_adv l "<b><font color=#DF2111>Color by ranges</font><b>"}
+ addUserKnob {41 value_3 l Highlight T HIGH_Multiply.value}
+ addUserKnob {41 value_1 l Midtone T MID_Multiply.value}
+ addUserKnob {41 value_2 l Shadow T LOW_Multiply.value}
+ addUserKnob {26 ""}
+ addUserKnob {26 Exp_adv l "<b><font color=#FFFFFF>Exposure by ranges</font><b>"}
+ addUserKnob {41 red_1 l Highlight T Exposure_HIGH.red}
+ addUserKnob {41 red_2 l Midtone T Exposure_MID.red}
+ addUserKnob {41 red_3 l Shadow T Exposure_SHAD.red}
+ addUserKnob {26 Blur_size l "<b><font color=#298B00>Range Blur</font><b>"}
+ addUserKnob {41 size l "Blur size" T Blur_range_edge.size}
+ addUserKnob {26 ""}
+ addUserKnob {20 Ranges t "Adjust the range to multiply the tones separately " n 2}
+ addUserKnob {41 range l "Highlight range" t "Allows you to adjust the range of the `highlight`." T HIGHLIGHT.range}
+ addUserKnob {41 range_1 l "Midtone range" t "Allows you to adjust the range of the `midtone`." T MIDTONE.range}
+ addUserKnob {41 range_2 l "Shadow range" t "Allows you to adjust the range of the `shadow`." T SHADOW.range}
+ addUserKnob {20 endGroup n -1}
+}
+ BackdropNode {
+  inputs 0
+  name BackdropNode1
+  tile_color 0xa9a9a9ff
+  label "<center> OUT"
+  note_font_size 42
+  xpos 20
+  ypos 2110
+  bdwidth 1500
+  bdheight 100
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode2
+  tile_color 0x7171c600
+  label <center>Ranges
+  note_font_size 42
+  xpos 1600
+  ypos 52
+  bdwidth 321
+  bdheight 808
+ }
+ BackdropNode {
+  inputs 0
+  name BackdropNode3
+  tile_color 0xa9a9a9ff
+  label "<center> IN"
+  note_font_size 42
+  xpos 20
+  ypos -362
+  bdwidth 1500
+  bdheight 100
+ }
+ Input {
+  inputs 0
+  name plate
+  xpos 70
+  ypos -322
+ }
+ Dot {
+  name Dot1
+  xpos 104
+  ypos 138
+ }
+set Ne428220 [stack 0]
+ Dot {
+  name Dot2
+  xpos 544
+  ypos 138
+ }
+set Ne42cc90 [stack 0]
+ Dot {
+  name Dot21
+  xpos 1754
+  ypos 138
+ }
+set Ne4317a0 [stack 0]
+ Keyer {
+  operation "luminance key"
+  range {0 0 0 0.1}
+  name SHADOW
+  xpos 1830
+  ypos 416
+ }
+ Clamp {
+  name Clamp8
+  xpos 1830
+  ypos 608
+ }
+ set Ce440310 [stack 0]
+ Blur {
+  size 1.5
+  name Blur_range_edge
+  xpos 1830
+  ypos 824
+ }
+ set Ce44ebb0 [stack 0]
+ Input {
+  inputs 0
+  name mask
+  xpos 950
+  ypos -322
+  number 1
+ }
+ Clamp {
+  name Clamp1
+  xpos 950
+  ypos -40
+ }
+ key_chew {
+  name key_chew1
+  xpos 950
+  ypos 398
+ }
+ Constant {
+  inputs 0
+  channels alpha
+  color 1
+  name Constant1
+  xpos 1280
+  ypos 537
+ }
+ ChannelMerge {
+  inputs 2
+  operation multiply
+  name ChannelMerge_Mult
+  label "\[value operation]"
+  xpos 950
+  ypos 548
+ }
+set Ne51dbb0 [stack 0]
+ Dot {
+  name Dot18
+  xpos 984
+  ypos 618
+ }
+set Ne52a010 [stack 0]
+ Dot {
+  name Dot19
+  xpos 1094
+  ypos 618
+ }
+set Ne52eaa0 [stack 0]
+ Dot {
+  name Dot20
+  xpos 1204
+  ypos 618
+ }
+ ChannelMerge {
+  inputs 2
+  operation multiply
+  name LOW_CH
+  label "LOW\n\[value operation]"
+  xpos 1170
+  ypos 806
+ }
+set Ne538080 [stack 0]
+ Dot {
+  name Dot11
+  xpos 1204
+  ypos 1818
+ }
+push $Ne4317a0
+ Keyer {
+  operation "luminance key"
+  range {0 0.1 0.5 1}
+  name MIDTONE
+  xpos 1720
+  ypos 344
+ }
+clone $Ce440310 {
+  xpos 1720
+  ypos 536
+  selected false
+ }
+clone $Ce44ebb0 {
+  xpos 1720
+  ypos 752
+  selected false
+ }
+push $Ne52eaa0
+ ChannelMerge {
+  inputs 2
+  operation multiply
+  name MID_CH
+  label "MID\n\[value operation]"
+  xpos 1060
+  ypos 734
+ }
+set Ne56f300 [stack 0]
+ Dot {
+  name Dot13
+  xpos 1094
+  ypos 1770
+ }
+push $Ne4317a0
+ Keyer {
+  operation "luminance key"
+  range {0.5 1 50 50}
+  name HIGHLIGHT
+  xpos 1610
+  ypos 272
+ }
+clone $Ce440310 {
+  xpos 1610
+  ypos 464
+  selected false
+ }
+clone $Ce44ebb0 {
+  xpos 1610
+  ypos 680
+  selected true
+ }
+push $Ne52a010
+ ChannelMerge {
+  inputs 2
+  operation multiply
+  name HIGH_CH
+  label "HIGH\n\[value operation]"
+  xpos 950
+  ypos 662
+ }
+set Ne5a65b0 [stack 0]
+ Dot {
+  name Dot12
+  xpos 984
+  ypos 1722
+ }
+push $Ne51dbb0
+ Dot {
+  name Dot5
+  xpos 874
+  ypos 570
+ }
+set Ne5b7140 [stack 0]
+ Dot {
+  name Dot17
+  xpos 874
+  ypos 1146
+ }
+set Ne5bba10 [stack 0]
+ Dot {
+  name Dot9
+  xpos 874
+  ypos 1362
+ }
+set Ne5c0830 [stack 0]
+ Dot {
+  name Dot7
+  xpos 874
+  ypos 1482
+ }
+set Ne5c53c0 [stack 0]
+ Dot {
+  name Dot8
+  xpos 874
+  ypos 1626
+ }
+push $Ne428220
+ Dot {
+  name Dot3
+  xpos -116
+  ypos 138
+ }
+ Dot {
+  name Dot4
+  xpos -116
+  ypos 1482
+ }
+set Ne5d3310 [stack 0]
+push $Ne5b7140
+ Dot {
+  name Dot14
+  xpos 874
+  ypos 498
+ }
+set Ne5d7bc0 [stack 0]
+ Dot {
+  name Dot6
+  xpos 874
+  ypos 450
+ }
+push $Ne428220
+push $Ne42cc90
+ Blur {
+  channels {{{parent.channels}}}
+  size 40
+  name Blur3
+  xpos 510
+  ypos 248
+ }
+set Ne5e1470 [stack 0]
+ Merge2 {
+  inputs 2
+  operation divide
+  name MergeDiv
+  xpos 70
+  ypos 254
+ }
+set Ne5ee870 [stack 0]
+ Expression {
+  inputs 1+1
+  expr2 "g>max(r,b) ? max (r,b):g"
+  name Expression1
+  tile_color 0x6aff55ff
+  xpos -40
+  ypos 446
+ }
+push $Ne5d7bc0
+push $Ne5ee870
+ Expression {
+  inputs 1+1
+  expr2 "b>max(r,g) ? max (r,g):b"
+  name Expression2
+  tile_color 0x9fffff
+  xpos 70
+  ypos 494
+ }
+ Switch {
+  inputs 2
+  which {{parent.type}}
+  name GreenOrBlue
+  xpos 70
+  ypos 1142
+ }
+ set Ce619d60 [stack 0]
+push $Ne5c0830
+push $Ne538080
+push $Ne56f300
+push $Ne5a65b0
+push $Ne5e1470
+ Dot {
+  name Dot364
+  xpos 654
+  ypos 258
+ }
+ Multiply {
+  name Multiply
+  xpos 620
+  ypos 320
+ }
+ Multiply {
+  inputs 1+1
+  name HIGH_Multiply
+  xpos 620
+  ypos 680
+ }
+ Multiply {
+  inputs 1+1
+  name MID_Multiply
+  xpos 620
+  ypos 752
+ }
+ Multiply {
+  inputs 1+1
+  name LOW_Multiply
+  xpos 620
+  ypos 824
+ }
+ Dot {
+  name Dot10
+  xpos 654
+  ypos 1098
+ }
+set Ne6557d0 [stack 0]
+push $Ne5e1470
+ Copy {
+  inputs 2+1
+  from0 rgba.red
+  to0 rgba.green
+  mix {{parent.MIX}}
+  name Copy2
+  tile_color 0x55ff7fff
+  xpos 510
+  ypos 1352
+ }
+push $Ne5bba10
+push $Ne6557d0
+push $Ne5e1470
+ Copy {
+  inputs 2+1
+  from0 rgba.green
+  to0 rgba.blue
+  mix {{parent.MIX}}
+  name Copy
+  tile_color 0x557fffff
+  xpos 510
+  ypos 1136
+ }
+clone $Ce619d60 {
+  inputs 2
+  xpos 180
+  ypos 1142
+  selected false
+ }
+ Merge2 {
+  inputs 2
+  operation multiply
+  name MergeMult
+  xpos 70
+  ypos 1358
+ }
+set Ne67e170 [stack 0]
+ Copy {
+  inputs 2
+  from1 rgba.red
+  to1 rgba.red
+  from2 rgba.blue
+  to2 rgba.blue
+  name Copy3
+  tile_color 0x55ff7fff
+  xpos 180
+  ypos 1460
+ }
+push $Ne5c53c0
+push $Ne5d3310
+push $Ne67e170
+ Copy {
+  inputs 2+1
+  from1 rgba.red
+  to1 rgba.red
+  from2 rgba.green
+  to2 rgba.green
+  name Copy1
+  tile_color 0x557fffff
+  xpos 70
+  ypos 1460
+ }
+clone $Ce619d60 {
+  inputs 2
+  xpos 70
+  ypos 1574
+  selected false
+ }
+ EXPTool {
+  inputs 1+1
+  mode Stops
+  green {{red x1930 3.9}}
+  blue {{red x1930 4.2}}
+  name Exposure1
+  xpos 70
+  ypos 1622
+ }
+ EXPTool {
+  inputs 1+1
+  mode Stops
+  name Exposure_HIGH
+  xpos 70
+  ypos 1718
+ }
+ EXPTool {
+  inputs 1+1
+  mode Stops
+  name Exposure_MID
+  xpos 70
+  ypos 1766
+ }
+ EXPTool {
+  inputs 1+1
+  mode Stops
+  name Exposure_SHAD
+  xpos 70
+  ypos 1814
+ }
+ Crop {
+  box {0 0 4096 2304}
+  name Crop
+  xpos 70
+  ypos 2006
+ }
+ Output {
+  name Output1
+  xpos 70
+  ypos 2150
+ }
+end_group
