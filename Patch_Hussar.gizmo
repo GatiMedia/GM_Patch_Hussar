@@ -1,5 +1,4 @@
 Group {
- inputs 2
  name Patch_Hussar
  tile_color 0xff5555ff
  selected true
